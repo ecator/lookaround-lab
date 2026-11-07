@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LookaroundLab · 正则断言实验室</title>
+  <meta name="description" content="从零开始,在实验室里玩转正则表达式的断言:先行、后行、肯定、否定。">
+  <script>
+    /* 在样式渲染前应用主题,避免闪烁 */
+    (function () {
+      var m = 'auto';
+      try { m = localStorage.getItem('lookaroundlab.theme') || 'auto'; } catch (e) {}
+      var dark = m === 'dark' || (m !== 'light' && window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <button id="menuBtn" class="icon-btn" aria-label="打开目录">☰</button>
+    <a class="brand" href="#/"><img src="favicon.svg" alt="" width="28" height="28"><span>LookaroundLab</span></a>
+    <select id="themeSel" class="theme-sel" aria-label="主题"></select>
+    <select id="langSel" class="lang-sel" aria-label="语言"></select>
+    <div class="top-progress">
+      <span id="rank" class="rank">断言萌新</span>
+      <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+      <span id="pct" class="pct">0%</span>
+    </div>
+  </header>
+  <div class="layout">
+    <nav id="sidebar" class="sidebar" aria-label="章节目录"></nav>
+    <main id="main" class="main" tabindex="-1"></main>
+  </div>
+  <noscript><p style="padding:2rem">请启用 JavaScript 以使用 LookaroundLab。</p></noscript>
+  <script src="locales.js"></script>
+  <script src="lib.js"></script>
+</body>
+</html>
