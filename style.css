@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   color-scheme: dark;
   --bg: #12161b; --panel: #1a2028; --panel2: #232b36; --line: #34404f;
   --text: #ebe8e2; --muted: #9aa5b1; --accent: #b4592a; --accent2: #7fb7c4;
@@ -37,6 +37,8 @@ pre { margin: 0; white-space: pre-wrap; word-break: break-all; }
 .brand { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font-weight: 800; font-size: 1.15rem; }
 .top-progress { margin-left: 0; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .theme-sel { margin-left: auto; }
+.gh-link { display: flex; align-items: center; color: var(--text); opacity: .8; }
+.gh-link:hover { opacity: 1; color: var(--accent); }
 .lang-sel, .theme-sel { background: var(--panel2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; font-size: .9rem; }
 .rank { background: linear-gradient(90deg, var(--accent), var(--accent2)); color: #fff; padding: 2px 10px; border-radius: 99px; font-size: .8rem; white-space: nowrap; }
 .bar { width: 140px; height: 8px; background: var(--panel2); border-radius: 99px; overflow: hidden; }
