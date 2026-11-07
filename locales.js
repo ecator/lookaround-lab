@@ -150,7 +150,7 @@
       ex: {
         "e7-1": { title: "千分位格式化", desc: "把数字每三位插入一个逗号。替换为 <code>,</code>", hint: "<code>\\B(?=(\\d{3})+(?!\\d))</code>" },
         "e7-2": { title: "驼峰转下划线", desc: "在\"小写字母后跟大写字母\"的缝隙插入 <code>_</code>。(只插入,不改大小写)", hint: "<code>(?&lt;=[a-z])(?=[A-Z])</code>" },
-        "e7-3": { title: "给叠字之间划线", desc: "在两个<b>相同字符</b>之间插入 <code>|</code>。提示:断言里也可以用反向引用 <code>\\1</code>。", hint: "<code>(?&lt;=(.))(?=\\1)</code>" }
+        "e7-3": { title: "给叠字之间划线", desc: "在两个<b>相同字符</b>之间插入 <code>|</code>。提示:断言里也可以用反向引用 <code>\\1</code>。", hint: "<code>(?&lt;=(.))(?=\\1)</code><br>为什么不能写成 <code>(?&lt;=\\1)(?=(.))</code>?因为正则按从左到右的顺序执行:后行断言里的 <code>\\1</code> 先被执行,此时第 1 组还没捕获任何内容,在 JavaScript 里未参与匹配的组引用会匹配空串,于是 <code>(?&lt;=\\1)</code> 恒成立;后面的 <code>(?=(.))</code> 只是把下一个字符捕获起来,并不要求它等于前一个字符。结果就是在每个字符前都插入 |,而不只是叠字之间。" }
       }
     },
     l8: {
@@ -394,7 +394,7 @@ Look at the <code>&lt;</code> bracket in <code>(?&lt;=Y)</code> — it is an arr
       , ex: {
         'e7-1': { title: 'Thousands separators', desc: 'Insert a comma every three digits. Replacement: <code>,</code>', hint: '<code>\\B(?=(\\d{3})+(?!\\d))</code>' },
         'e7-2': { title: 'camelCase to underscores', desc: 'Insert <code>_</code> in gaps between a lowercase letter and an uppercase one. (Insert only, don\'t change case.)', hint: '<code>(?&lt;=[a-z])(?=[A-Z])</code>' },
-        'e7-3': { title: 'Line between doubled letters', desc: 'Insert <code>|</code> between two <b>identical characters</b>. Hint: assertions can use backreferences like <code>\\1</code>.', hint: '<code>(?&lt;=(.))(?=\\1)</code>' }
+        'e7-3': { title: 'Line between doubled letters', desc: 'Insert <code>|</code> between two <b>identical characters</b>. Hint: assertions can use backreferences like <code>\\1</code>.', hint: '<code>(?&lt;=(.))(?=\\1)</code><br>Why not <code>(?&lt;=\\1)(?=(.))</code>? Matching runs left to right: the <code>\\1</code> in the lookbehind is evaluated before group 1 has captured anything. In JavaScript a backreference to an unset group matches the empty string, so the lookbehind always succeeds, and <code>(?=(.))</code> merely captures the next character without comparing it to the previous one. The result is a | before every character, not just between doubled ones.' }
       }
     },
     l8: {
@@ -640,7 +640,7 @@ Look at the <code>&lt;</code> bracket in <code>(?&lt;=Y)</code> — it is an arr
       , ex: {
         'e7-1': { title: '桁区切り', desc: '3 桁ごとにカンマを挿入。置換文字列は <code>,</code>', hint: '<code>\\B(?=(\\d{3})+(?!\\d))</code>' },
         'e7-2': { title: 'キャメルケースを下線に', desc: '「小文字の次が大文字」のすき間に <code>_</code> を挿入。(挿入のみ、大文字小文字は変えない)', hint: '<code>(?&lt;=[a-z])(?=[A-Z])</code>' },
-        'e7-3': { title: '重なった文字の間に線', desc: '<b>同じ文字</b>が 2 つ並ぶ間に <code>|</code> を挿入。ヒント:アサーションの中でも <code>\\1</code> のような後方参照が使える。', hint: '<code>(?&lt;=(.))(?=\\1)</code>' }
+        'e7-3': { title: '重なった文字の間に線', desc: '<b>同じ文字</b>が 2 つ並ぶ間に <code>|</code> を挿入。ヒント:アサーションの中でも <code>\\1</code> のような後方参照が使える。', hint: '<code>(?&lt;=(.))(?=\\1)</code><br>なぜ <code>(?&lt;=\\1)(?=(.))</code> ではダメ?正規表現は左から右へ実行されるため、後読み内の <code>\\1</code> が先に評価され、その時点で第 1 グループは何も捕獲していません。JavaScript では未参加グループへの後方参照は空文字にマッチするので、<code>(?&lt;=\\1)</code> は常に成立します。続く <code>(?=(.))</code> は次の文字を捕獲するだけで、直前の文字と比較しません。結果、重なった文字の間だけでなく、すべての文字の前に | が入ってしまいます。' }
       }
     },
     l8: {
