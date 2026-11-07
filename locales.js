@@ -31,6 +31,21 @@
 <h2>语法</h2>
 <div class="codeblock"><pre>X(?=Y)    匹配 X,前提是 X 后面紧跟 Y(Y 不会被匹配进结果)</pre></div>
 <p>例:<code>\d+(?=元)</code> 作用于 <code>苹果5元</code> → 结果只有 <code>5</code>,"元"仍留在原处,等待后续匹配。</p>
+<h2>🧭 核心辨析：“向前看”到底看的是哪一边？</h2>
+<p>很多初学者都会在这里绕晕：<b>“既然叫‘向前看’，为什么匹配的却是文字‘后面’的内容？”</b></p>
+<p>这是因为<b>“日常文字排版”</b>和<b>“正则游标视线”</b>的参照物截然不同：</p>
+<table class="t">
+<tr><th>视角</th><th>左侧文字（如 <code>苹果</code>）</th><th>右侧文字（如 <code>元</code>）</th></tr>
+<tr><td><b>文字排版（日常说话）</b></td><td>排在<b>前面</b>（前文、开头）</td><td>排在<b>后面</b>（后文、后续）</td></tr>
+<tr><td><b>正则游标（行进视角）</b></td><td>已经走过的身后（历史）</td><td><b>正要前往的前方（未来）</b></td></tr>
+</table>
+<div class="note"><b>💡 灰原的提醒:</b> 把正则引擎想象成一个<b>从左向右走</b>的侦探：
+<ul>
+<li>侦探朝前进方向（<b>右侧未来的文字</b>）看一眼，英文叫 <b>Lookahead（向前看 / 先行）</b>。</li>
+<li>但在排版上，右侧文字偏偏是我们口中的<b>“后文”</b>。</li>
+<li>所以记住核心对应：<b>先行断言（向前看）＝ 朝右看 ＝ 检查目标文字的“后文”</b>。</li>
+</ul>
+别被日常口语里的“前后”带偏了，跟着侦探的前进视线走就行。</div>
 <h2>它为什么叫"零宽"?</h2>
 <p>因为 <code>(?=元)</code> 检查完后,匹配位置并没有前进。所以 <code>a(?=b)b</code> 能匹配 <code>ab</code>——b 被"看"了一次,又被"吃"了一次。</p>
 <div class="tip"><b>💡</b>对比 <code>\d+元</code>:结果会包含"元"。需要只拿数字、又要保证后面是"元"时,就用先行断言。</div>`,
@@ -61,10 +76,23 @@
 <div class="story"><b>🧪 灰原的笔记:</b>先行是向前看,后行就是<b>回头看</b>。想拿到 <code>$</code> 后面的金额,又不想把 <code>$</code> 一起拿走,就先回头确认一眼。过去的事,看一眼就够了。</div>
 <h2>语法</h2>
 <div class="codeblock"><pre>(?&lt;=Y)X    匹配 X,前提是 X 前面紧挨着 Y</pre></div>
-<table class="t"><tr><th></th><th>肯定(必须有)</th><th>否定(不能有)</th></tr>
-<tr><td>向前看</td><td><code>(?=…)</code></td><td><code>(?!…)</code></td></tr>
-<tr><td>回头看</td><td><code>(?&lt;=…)</code></td><td><code>(?&lt;!…)</code></td></tr></table>
-<p>记忆口诀:<b>多一个 <code>&lt;</code> 就是"向后看"</b>(箭头指向左边),<code>=</code> 是肯定,<code>!</code> 是否定。</p>
+<h2>🧭 为什么叫“向后看 / 回头看”，看的却是“文字前面的内容”？</h2>
+<p>明白了第 2 章的游标视角，这里就完全通顺了：</p>
+<ul>
+<li>在 <code>$30</code> 中，当游标走到 <code>30</code> 时，<code>$</code> 已经在游标的<b>左侧身后</b>（走过的路）。</li>
+<li>此时转过头看身后一眼，英文叫 <b>Lookbehind（向后看 / 回头看 / 后行断言）</b>。</li>
+<li>虽然日常说话习惯称 <code>$</code> 在 30 的“前面”，但对前进的游标而言，那是<b>“身后的历史”</b>。</li>
+</ul>
+<div class="tip"><b>💡 一秒分清的记忆口诀:</b>
+看语法符号 <code>(?&lt;=Y)</code> 里的 <code>&lt;</code> 尖括号——它正是一枚<b>指向左边</b>的箭头！
+<ul>
+<li><b>有 <code>&lt;</code> 箭头（向左指）</b>：回头看左边 ➔ 检查<b>前文</b>（如 <code>(?&lt;=Y)X</code> 检查 X 左侧）。</li>
+<li><b>无 <code>&lt;</code> 箭头（向右看）</b>：向前看右边 ➔ 检查<b>后文</b>（如 <code>X(?=Y)</code> 检查 X 右侧）。</li>
+</ul>
+</div>
+<table class="t"><tr><th>断言类型</th><th>英文原名</th><th>游标视线</th><th>检查位置</th><th>肯定式</th><th>否定式</th></tr>
+<tr><td><b>先行断言</b></td><td>Lookahead</td><td>向前看（前进方向）</td><td><b>目标右侧（后文）</b></td><td><code>(?=…)</code></td><td><code>(?!…)</code></td></tr>
+<tr><td><b>后行断言</b></td><td>Lookbehind</td><td>向后看（回头看身后）</td><td><b>目标左侧（前文）</b></td><td><code>(?&lt;=…)</code></td><td><code>(?&lt;!…)</code></td></tr></table>
 <div class="note"><b>📝</b>现代浏览器(Chrome 62+、Firefox 78+、Safari 16.4+)和 Node 都支持后行断言。<b>注意</b>:放在后行断言里的是"到当前位置为止的前文"。</div>
 <div class="warn"><b>⚠️</b><code>(?&lt;=\$)\d+</code> 的写法里,<code>$</code> 需要转义成 <code>\$</code>,否则它是"行尾"。</div>`,
       ex: {
@@ -195,13 +223,14 @@
     errNeed: '本题要求用到断言 {n} 。想绕过去?我看得出来。', errFail: '还没通过。仔细看红框里的差异,线索都摆在那里。',
     labPageH1: '🧪 自由实验室', labPageLead: '想试什么就试什么,青色竖线表示零宽匹配。',
     cheatH1: '📋 断言速查表', cheatLead: '看一眼就能想起来。',
-    cheat: R`<table class="t"><tr><th>语法</th><th>名称</th><th>含义</th><th>示例</th></tr>
+    cheat: R`<table class="t"><tr><th>语法</th><th>名称</th><th>检查方向与含义</th><th>示例</th></tr>
 <tr><td><code>^</code> <code>$</code></td><td>行首 / 行尾</td><td>加 <code>m</code> 标志按行匹配</td><td><code>^\d+$</code></td></tr>
 <tr><td><code>\b</code> <code>\B</code></td><td>单词边界 / 非边界</td><td>\w 与 \W 之间的位置</td><td><code>\bcat\b</code></td></tr>
-<tr><td><code>(?=…)</code></td><td>肯定先行</td><td>后面必须是…</td><td><code>\d+(?=元)</code></td></tr>
-<tr><td><code>(?!…)</code></td><td>否定先行</td><td>后面不能是…</td><td><code>foo(?!bar)</code></td></tr>
-<tr><td><code>(?&lt;=…)</code></td><td>肯定后行</td><td>前面必须是…</td><td><code>(?&lt;=\$)\d+</code></td></tr>
-<tr><td><code>(?&lt;!…)</code></td><td>否定后行</td><td>前面不能是…</td><td><code>(?&lt;!java)script</code></td></tr></table>
+<tr><td><code>(?=…)</code></td><td>肯定先行 (Lookahead)</td><td><b>右侧(后文)</b>必须是…</td><td><code>\d+(?=元)</code></td></tr>
+<tr><td><code>(?!…)</code></td><td>否定先行 (Negative Lookahead)</td><td><b>右侧(后文)</b>不能是…</td><td><code>foo(?!bar)</code></td></tr>
+<tr><td><code>(?&lt;=…)</code></td><td>肯定后行 (Lookbehind)</td><td><b>左侧(前文)</b>必须是…</td><td><code>(?&lt;=\$)\d+</code></td></tr>
+<tr><td><code>(?&lt;!…)</code></td><td>否定后行 (Negative Lookbehind)</td><td><b>左侧(前文)</b>不能是…</td><td><code>(?&lt;!java)script</code></td></tr></table>
+<div class="note"><b>🧭 方向指南:</b> 正则游标自左向右行进。先行（Lookahead）是向前看右侧未走之路（后文）；后行（Lookbehind，带 <code>&lt;</code> 箭头）是回头看左侧已走之途（前文）。</div>
 <h2>常用套路</h2><table class="t"><tr><th>需求</th><th>写法</th></tr>
 <tr><td>同时满足多个条件</td><td><code>^(?=.*A)(?=.*B).*$</code></td></tr>
 <tr><td>整行不含 A</td><td><code>^(?!.*A).*$</code></td></tr>
@@ -241,6 +270,21 @@
 <h2>Syntax</h2>
 <div class="codeblock"><pre>X(?=Y)    match X, provided X is immediately followed by Y (Y is not part of the result)</pre></div>
 <p>Example: <code>\d+(?=元)</code> on <code>苹果5元</code> gives only <code>5</code>. The "元" stays in place for later matching.</p>
+<h2>🧭 Direction check: What does "look ahead" actually look at?</h2>
+<p>A classic stumbling block: <b>"If it is called looking ahead, why does it inspect characters that come <i>after</i> in the text?"</b></p>
+<p>The confusion stems from the contrast between <b>text reading order</b> and the <b>engine cursor's perspective</b>:</p>
+<table class="t">
+<tr><th>Perspective</th><th>Left side (e.g. <code>Apple</code>)</th><th>Right side (e.g. <code>元</code>)</th></tr>
+<tr><td><b>Text reading order</b></td><td>Comes <b>before</b> (earlier text)</td><td>Comes <b>after</b> (subsequent text)</td></tr>
+<tr><td><b>Regex cursor movement</b></td><td>The path behind (history)</td><td><b>The road ahead (future)</b></td></tr>
+</table>
+<div class="note"><b>💡 Haibara's note:</b> Picture the regex engine as a detective walking <b>left to right</b> along the string:
+<ul>
+<li>Peeking forward along the walking direction (toward the <b>right side</b>) is called <b>Lookahead</b>.</li>
+<li>Yet in everyday writing, text to the right is described as coming <b>after</b> or <b>following</b>.</li>
+<li>Key takeaway: <b>Lookahead = look to the right = inspect subsequent / following text</b>.</li>
+</ul>
+Don't let colloquial "before/after" mislead you. Just look where the detective is heading.</div>
 <h2>Why "zero-width"?</h2>
 <p>After <code>(?=元)</code> checks, the position hasn't advanced. So <code>a(?=b)b</code> matches <code>ab</code>: b is "seen" once and "eaten" once.</p>
 <div class="tip"><b>💡</b> Compare <code>\d+元</code>: its result includes 元. Use a lookahead when you want only the digits but need to be sure 元 follows.</div>`
@@ -273,10 +317,23 @@
 <div class="story"><b>🧪 Haibara's notes:</b> Lookahead looks forward; lookbehind <b>looks back</b>. To get the amount after <code>$</code> without taking the <code>$</code>, glance back first. The past only deserves one look.</div>
 <h2>Syntax</h2>
 <div class="codeblock"><pre>(?&lt;=Y)X    match X, provided X is immediately preceded by Y</pre></div>
-<table class="t"><tr><th></th><th>Positive (must be)</th><th>Negative (must not be)</th></tr>
-<tr><td>Look ahead</td><td><code>(?=…)</code></td><td><code>(?!…)</code></td></tr>
-<tr><td>Look back</td><td><code>(?&lt;=…)</code></td><td><code>(?&lt;!…)</code></td></tr></table>
-<p>Mnemonic: <b>an extra <code>&lt;</code> means "look backward"</b> (the arrow points left); <code>=</code> is positive, <code>!</code> is negative.</p>
+<h2>🧭 Why "lookbehind" inspects text that comes "before"</h2>
+<p>Once you see the walking detective analogy from Chapter 2, this becomes crystal clear:</p>
+<ul>
+<li>When the cursor arrives at <code>30</code> in <code>$30</code>, the <code>$</code> is already on its <b>left side, behind it</b> (the ground already covered).</li>
+<li>Glancing back over its shoulder is thus called <b>Lookbehind</b>.</li>
+<li>Even though we say "the dollar sign comes <i>before</i> 30" in text, to the cursor it lies in the <b>past (behind)</b>.</li>
+</ul>
+<div class="tip"><b>💡 The foolproof mnemonic:</b>
+Look at the <code>&lt;</code> bracket in <code>(?&lt;=Y)</code> — it is an arrow pointing <b>left</b>!
+<ul>
+<li><b>With <code>&lt;</code> (points left)</b>: glance left at what came before (preceding text).</li>
+<li><b>Without <code>&lt;</code> (looks right)</b>: gaze right at what comes after (following text).</li>
+</ul>
+</div>
+<table class="t"><tr><th>Assertion</th><th>Original Name</th><th>Cursor Sightline</th><th>Inspects</th><th>Positive</th><th>Negative</th></tr>
+<tr><td><b>Lookahead</b></td><td>Look ahead</td><td>Forward (movement direction)</td><td><b>Right side (following)</b></td><td><code>(?=…)</code></td><td><code>(?!…)</code></td></tr>
+<tr><td><b>Lookbehind</b></td><td>Look behind</td><td>Backward (turn around)</td><td><b>Left side (preceding)</b></td><td><code>(?&lt;=…)</code></td><td><code>(?&lt;!…)</code></td></tr></table>
 <div class="note"><b>📝</b> Lookbehind works in modern browsers (Chrome 62+, Firefox 78+, Safari 16.4+) and Node.</div>
 <div class="warn"><b>⚠️</b> In <code>(?&lt;=\$)\d+</code> the <code>$</code> must be escaped as <code>\$</code>, otherwise it means "end of line".</div>`
       , ex: {
@@ -412,13 +469,14 @@
     errNeed: 'This exercise requires the assertion {n}. Trying to get around it? I can tell.', errFail: 'Not passing yet. Look at the differences in the red boxes; the clues are right there.',
     labPageH1: '🧪 Free lab', labPageLead: 'Try whatever you like. Cyan bars mark zero-width matches.',
     cheatH1: '📋 Assertion cheat sheet', cheatLead: 'One glance and it comes back.',
-    cheat: R`<table class="t"><tr><th>Syntax</th><th>Name</th><th>Meaning</th><th>Example</th></tr>
+    cheat: R`<table class="t"><tr><th>Syntax</th><th>Name</th><th>Direction & Meaning</th><th>Example</th></tr>
 <tr><td><code>^</code> <code>$</code></td><td>Line start / end</td><td>With the <code>m</code> flag, per line</td><td><code>^\d+$</code></td></tr>
 <tr><td><code>\b</code> <code>\B</code></td><td>Word boundary / non-boundary</td><td>Position between \w and \W</td><td><code>\bcat\b</code></td></tr>
-<tr><td><code>(?=…)</code></td><td>Positive lookahead</td><td>Must be followed by…</td><td><code>\d+(?=元)</code></td></tr>
-<tr><td><code>(?!…)</code></td><td>Negative lookahead</td><td>Must not be followed by…</td><td><code>foo(?!bar)</code></td></tr>
-<tr><td><code>(?&lt;=…)</code></td><td>Positive lookbehind</td><td>Must be preceded by…</td><td><code>(?&lt;=\$)\d+</code></td></tr>
-<tr><td><code>(?&lt;!…)</code></td><td>Negative lookbehind</td><td>Must not be preceded by…</td><td><code>(?&lt;!java)script</code></td></tr></table>
+<tr><td><code>(?=…)</code></td><td>Positive lookahead</td><td><b>Right side (following)</b> must be…</td><td><code>\d+(?=元)</code></td></tr>
+<tr><td><code>(?!…)</code></td><td>Negative lookahead</td><td><b>Right side (following)</b> must not be…</td><td><code>foo(?!bar)</code></td></tr>
+<tr><td><code>(?&lt;=…)</code></td><td>Positive lookbehind</td><td><b>Left side (preceding)</b> must be…</td><td><code>(?&lt;=\$)\d+</code></td></tr>
+<tr><td><code>(?&lt;!…)</code></td><td>Negative lookbehind</td><td><b>Left side (preceding)</b> must not be…</td><td><code>(?&lt;!java)script</code></td></tr></table>
+<div class="note"><b>🧭 Direction guide:</b> The cursor walks left-to-right. Lookahead looks forward at upcoming text on the right (subsequent); Lookbehind (with the <code>&lt;</code> arrow) glances back at traversed text on the left (preceding).</div>
 <h2>Common recipes</h2><table class="t"><tr><th>Need</th><th>Pattern</th></tr>
 <tr><td>Satisfy several conditions</td><td><code>^(?=.*A)(?=.*B).*$</code></td></tr>
 <tr><td>Line without A</td><td><code>^(?!.*A).*$</code></td></tr>
@@ -458,6 +516,21 @@
 <h2>構文</h2>
 <div class="codeblock"><pre>X(?=Y)    X にマッチ。ただし X の直後が Y(Y は結果に含まれない)</pre></div>
 <p>例:<code>苹果5元</code> に <code>\d+(?=元)</code> を使うと、結果は <code>5</code> だけ。「元」はその場に残ります。</p>
+<h2>🧭 方角チェック:「先読み」は実際どこを見ているのか?</h2>
+<p>多くの学習者がここで混乱します:<b>「『先』読みというのに、なぜ文字の『後ろ(直後)』を検査するのか?」</b></p>
+<p>これは<b>「日常の文字表記」</b>と<b>「正規表現カーソルの視線」</b>で基準が正反対だからです:</p>
+<table class="t">
+<tr><th>視点</th><th>左側の文字(例:<code>苹果</code>)</th><th>右側の文字(例:<code>元</code>)</th></tr>
+<tr><td><b>日常の表記位置</b></td><td>前(先頭側・直前)</td><td>後ろ(末尾側・直後)</td></tr>
+<tr><td><b>正規表現カーソル</b></td><td>通り過ぎた過去(背後)</td><td><b>これから進む未来(前方・先)</b></td></tr>
+</table>
+<div class="note"><b>💡 灰原のメモ:</b> 文字列の上を<b>左から右へ歩く探偵</b>を想像してみて。
+<ul>
+<li>進む方角(<b>右側の未来の文字</b>)を覗き見るのが <b>Lookahead(先読み)</b>。</li>
+<li>しかし文面では、右側の文字は私たちが普段呼ぶ<b>「後ろの文字(直後)」</b>にあたります。</li>
+<li>重要公式:<b>先読み ＝ 右側を見る ＝ 対象文字の「後ろ(直後)」を検査する</b>。</li>
+</ul>
+日常の「前後」という言葉に引きずられないこと。探偵の進む向きだけを見なさい。</div>
 <h2>なぜ「ゼロ幅」?</h2>
 <p><code>(?=元)</code> は確認しても位置が進みません。だから <code>a(?=b)b</code> は <code>ab</code> にマッチします。b は一度「見られ」、一度「食べられ」ます。</p>
 <div class="tip"><b>💡</b><code>\d+元</code> だと結果に「元」が入ります。数字だけ欲しくて、後ろが「元」だと保証したいなら先読みを使います。</div>`
@@ -490,10 +563,23 @@
 <div class="story"><b>🧪 灰原のメモ:</b>先読みが前を見るなら、後読みは<b>振り返る</b>こと。<code>$</code> の後ろの金額だけ欲しくて <code>$</code> は要らないなら、先に振り返って確認する。過去は、一度見れば十分。</div>
 <h2>構文</h2>
 <div class="codeblock"><pre>(?&lt;=Y)X    X にマッチ。ただし X の直前が Y</pre></div>
-<table class="t"><tr><th></th><th>肯定(あること)</th><th>否定(ないこと)</th></tr>
-<tr><td>先を見る</td><td><code>(?=…)</code></td><td><code>(?!…)</code></td></tr>
-<tr><td>振り返る</td><td><code>(?&lt;=…)</code></td><td><code>(?&lt;!…)</code></td></tr></table>
-<p>覚え方:<b><code>&lt;</code> が付けば「後ろを見る」</b>(矢印が左向き)。<code>=</code> は肯定、<code>!</code> は否定。</p>
+<h2>🧭 なぜ「後読み」が文字の「前(直前)」を検査するのか?</h2>
+<p>第 2 章の探偵の視点が頭に入っていれば、簡単です:</p>
+<ul>
+<li><code>$30</code> でカーソルが <code>30</code> に着いたとき、<code>$</code> はすでに<b>左側の背後</b>(歩いてきた過去の道)にあります。</li>
+<li>背後を振り返って確認するから <b>Lookbehind(後読み)</b> と呼びます。</li>
+<li>日常では <code>$</code> は「30 の前」と表現しますが、カーソルにとっては「通り過ぎた後ろ」なのです。</li>
+</ul>
+<div class="tip"><b>💡 一瞬で判別できる暗記法:</b>
+構文 <code>(?&lt;=Y)</code> の <code>&lt;</code> を見てごらんなさい。これはまさに<b>左を指す矢印</b>!
+<ul>
+<li><b><code>&lt;</code> 矢印あり(左向き)</b>:左を振り返る ➔ <b>前の文字(直前)</b>を検査(例:<code>(?&lt;=Y)X</code>)。</li>
+<li><b><code>&lt;</code> 矢印なし(右向き)</b>:右の先を見る ➔ <b>後ろの文字(直後)</b>を検査(例:<code>X(?=Y)</code>)。</li>
+</ul>
+</div>
+<table class="t"><tr><th>アサーション</th><th>原名</th><th>カーソルの視線</th><th>検査位置</th><th>肯定</th><th>否定</th></tr>
+<tr><td><b>先読み</b></td><td>Lookahead</td><td>前を見る(進行方向)</td><td><b>右側(直後)</b></td><td><code>(?=…)</code></td><td><code>(?!…)</code></td></tr>
+<tr><td><b>後読み</b></td><td>Lookbehind</td><td>後ろを見る(背後を振り返る)</td><td><b>左側(直前)</b></td><td><code>(?&lt;=…)</code></td><td><code>(?&lt;!…)</code></td></tr></table>
 <div class="note"><b>📝</b>後読みは最近のブラウザ(Chrome 62+、Firefox 78+、Safari 16.4+)と Node で使えます。</div>
 <div class="warn"><b>⚠️</b><code>(?&lt;=\$)\d+</code> の <code>$</code> は <code>\$</code> とエスケープが必要。そうしないと「行末」の意味になります。</div>`
       , ex: {
@@ -629,13 +715,14 @@
     errNeed: 'この問題ではアサーション {n} を使うこと。ごまかそうとしても、お見通しよ。', errFail: 'まだ通っていないわ。赤枠の差をよく見て。手がかりはそこにある。',
     labPageH1: '🧪 自由実験室', labPageLead: '何でも試して。水色の縦線がゼロ幅マッチ。',
     cheatH1: '📋 アサーション早見表', cheatLead: '一目見れば思い出せる。',
-    cheat: R`<table class="t"><tr><th>構文</th><th>名前</th><th>意味</th><th>例</th></tr>
+    cheat: R`<table class="t"><tr><th>構文</th><th>名前</th><th>検査方向と意味</th><th>例</th></tr>
 <tr><td><code>^</code> <code>$</code></td><td>行頭 / 行末</td><td><code>m</code> フラグで行ごと</td><td><code>^\d+$</code></td></tr>
 <tr><td><code>\b</code> <code>\B</code></td><td>単語境界 / 非境界</td><td>\w と \W の間の位置</td><td><code>\bcat\b</code></td></tr>
-<tr><td><code>(?=…)</code></td><td>肯定先読み</td><td>後ろが〜であること</td><td><code>\d+(?=元)</code></td></tr>
-<tr><td><code>(?!…)</code></td><td>否定先読み</td><td>後ろが〜でないこと</td><td><code>foo(?!bar)</code></td></tr>
-<tr><td><code>(?&lt;=…)</code></td><td>肯定後読み</td><td>前が〜であること</td><td><code>(?&lt;=\$)\d+</code></td></tr>
-<tr><td><code>(?&lt;!…)</code></td><td>否定後読み</td><td>前が〜でないこと</td><td><code>(?&lt;!java)script</code></td></tr></table>
+<tr><td><code>(?=…)</code></td><td>肯定先読み</td><td><b>右側(直後)</b>が〜であること</td><td><code>\d+(?=元)</code></td></tr>
+<tr><td><code>(?!…)</code></td><td>否定先読み</td><td><b>右側(直後)</b>が〜でないこと</td><td><code>foo(?!bar)</code></td></tr>
+<tr><td><code>(?&lt;=…)</code></td><td>肯定後読み</td><td><b>左側(直前)</b>が〜であること</td><td><code>(?&lt;=\$)\d+</code></td></tr>
+<tr><td><code>(?&lt;!…)</code></td><td>否定後読み</td><td><b>左側(直前)</b>が〜でないこと</td><td><code>(?&lt;!java)script</code></td></tr></table>
+<div class="note"><b>🧭 方向の極意:</b> カーソルは左から右へ進みます。先読み(Lookahead)はこれから進む右側(直後)を見通し、後読み(Lookbehind、<code>&lt;</code> 矢印付き)は通り過ぎた左側(直前)を振り返ります。</div>
 <h2>よく使う型</h2><table class="t"><tr><th>やりたいこと</th><th>書き方</th></tr>
 <tr><td>複数条件を同時に満たす</td><td><code>^(?=.*A)(?=.*B).*$</code></td></tr>
 <tr><td>行に A を含まない</td><td><code>^(?!.*A).*$</code></td></tr>
